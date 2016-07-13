@@ -1,0 +1,1152 @@
+
+
+
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2016.03.24 16:52:45 =~=~=~=~=~=~=~=~=~=~=~=
+sh run
+
+!Command: show running-config
+!Time: Thu Mar 24 20:52:48 2016
+
+version 7.1(3)N1(1)
+hostname SE3B
+
+feature privilege
+feature telnet
+feature tacacs+
+cfs eth distribute
+feature udld
+feature interface-vlan
+feature hsrp
+feature lacp
+feature vpc
+feature lldp
+feature vtp
+feature fex
+
+username admin password 5 $1$glvBQV14$jJ8fOj/5wnf8GFAr64iKm1  role network-admin
+username storage password 5 !  role network-operator
+username idn-admin password 5 $1$Fmh3E9BB$RZUuBrJw81JM6e9a1cToU0  role priv-15
+username idn-admin role network-admin
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 1
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 2
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 3
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 4
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 5
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 6
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 7
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 8
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 9
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 10
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 11
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 12
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 13
+enable secret 5 $1$29021e52$575de22f330c5283 priv-lvl 14
+enable secret 5 $1$29021e52$575de22f330c5283
+no password strength-check
+
+banner motd #
+                     U.S. Department of Transportation
+
+* You are accessing a U.S. Government information system, which includes
+  (1) this computer, (2) this computer network, (3) all computers
+  connected to this network, and (4) all devices and storage media
+  attached to this network or to a computer on this network.  This
+  information system is provided for U.S. Government-authorized use only.
+
+* Unauthorized or improper use of this system may result in disciplinary
+  action, as well as civil and criminal penalties.
+
+* By using this information system, you understand and consent to the
+  following:
+    o  You have no reasonable expectation of privacy regarding any
+       communications or data transiting or stored on this information
+       system. At any time, the government may monitor, intercept,
+       search and seize any communication or data transiting or stored
+       on this information system.
+    o  Any communications or data transiting or stored on this
+       information system may be disclosed or used for any purpose.
+#
+
+no ip domain-lookup
+ip domain-name idn.dot.gov
+ip tacacs source-interface Vlan350
+tacacs-server timeout 60
+tacacs-server host 152.120.3.38 key 7 "qwwy=P9z8hgz3neL"
+tacacs-server host 152.120.3.39 key 7 "qwwy=P9z8hgz3neL"
+tacacs-server host 152.120.2.38 key 7 "qwwy=P9z8hgz3neL"
+tacacs-server host 152.120.4.38 key 7 "qwwy=P9z8hgz3neL"
+aaa group server tacacs+ tacacs+
+  server 152.120.3.38
+  server 152.120.3.39
+  server 152.120.2.38
+  server 152.120.4.38
+  deadtime 30
+crypto key param rsa label SE3B.idn.dot.gov modulus 2048
+logging event link-status default
+service unsupported-transceiver
+logging level ethpm link-up error
+ip access-list 10
+  10 permit ip 152.119.252.248/29 any
+  20 permit ip 152.120.2.0/24 any
+  30 permit ip 152.120.3.0/24 any
+  40 permit ip 152.120.4.0/24 any
+ip access-list 12
+  10 permit ip 152.120.3.171/32 any
+  20 permit ip 152.119.252.252/32 any
+ip access-list 25
+  10 permit ip 152.120.2.0/24 any
+  20 permit ip 152.120.3.0/24 any
+  30 permit ip 152.120.4.0/24 any
+  40 permit ip 152.119.252.248/29 any
+ip access-list 44
+  10 permit ip 152.120.2.200/32 any
+  20 permit ip 152.120.3.200/32 any
+ip access-list 61
+  10 remark SNMP access - acl61-20160317
+  20 remark Riverbed Netcollector
+  30 permit ip 152.120.3.252/32 any
+  40 remark Solarwinds
+  50 permit ip 152.120.2.231/32 any
+  60 permit ip 152.120.2.232/32 any
+  70 remark CSPC
+  80 permit ip 152.120.2.171/32 any
+  90 remark NCM
+  100 permit ip 152.120.3.172/32 any
+  110 remark Netflow-3
+  120 permit ip 152.120.2.179/32 any
+  130 remark Cacti
+  140 permit ip 152.120.2.183/32 any
+  150 remark ISE
+  160 permit ip 10.59.66.10/32 any
+  170 permit ip 10.59.66.9/32 any
+  180 permit ip 10.59.48.139/32 any
+  185 permit ip 10.59.48.138/32 any
+  190 remark NetMRI
+  195 permit ip 152.120.2.16/32 any
+ip access-list all_traffic
+  10 permit ip any any
+class-map type qos match-all class-iSCSI
+  match cos 4
+class-map type qos match-all class-nodrop
+class-map type queuing class-iSCSI
+  match qos-group 3
+class-map type queuing class-nodrop
+  match qos-group 2
+policy-map type qos policy-qos
+  class class-nodrop
+    set qos-group 2
+  class class-iSCSI
+    set qos-group 3
+policy-map type queuing policy-queuing
+  class type queuing class-fcoe
+    bandwidth percent 0
+  class type queuing class-nodrop
+    bandwidth percent 95
+  class type queuing class-default
+    bandwidth percent 5
+class-map type network-qos class-iSCSI
+  match qos-group 3
+class-map type network-qos class-nodrop
+  match qos-group 2
+policy-map type network-qos jumbo
+  class type network-qos class-default
+    mtu 9216
+    multicast-optimize
+policy-map type network-qos policy-nq
+  class type network-qos class-nodrop
+    mtu 9216
+    pause no-drop
+  class type network-qos class-iSCSI
+    mtu 9216
+    pause no-drop
+  class type network-qos class-default
+system qos
+  service-policy type qos input policy-qos
+  service-policy type queuing output policy-queuing
+  service-policy type queuing input fcoe-default-in-policy
+vtp mode transparent
+fex 101
+  pinning max-links 1
+  description "Cabinet 3A"
+fex 102
+  pinning max-links 1
+  description "Cabinet 3B"
+fex 103
+  pinning max-links 1
+  description "Cabinet 3C"
+fex 104
+  pinning max-links 1
+  description "Cabinet 3D"
+fex 105
+  pinning max-links 1
+  description "Cabinet 3E"
+fex 106
+  pinning max-links 1
+  description "Cabinet 3F"
+fex 107
+  pinning max-links 1
+  description "Cabinet 3G"
+fex 108
+  pinning max-links 1
+  description "Cabinet 3H"
+fex 109
+  pinning max-links 1
+  description "Cabinet 3I"
+fex 110
+  pinning max-links 1
+  description "Rack 3J"
+fex 111
+  pinning max-links 1
+  description "Cabinet 10A"
+fex 112
+  pinning max-links 1
+  description "Cabinet 10B"
+fex 113
+  pinning max-links 1
+  description "Cabinet 10C"
+fex 114
+  pinning max-links 1
+  description "Cabinet 10D"
+fex 115
+  pinning max-links 1
+  description "Cabinet 10E"
+fex 116
+  pinning max-links 1
+  description "Cabinet 10F"
+fex 117
+  pinning max-links 1
+  description "Cabinet 10G"
+fex 118
+  pinning max-links 1
+  description "Cabinet 10H"
+fex 119
+  pinning max-links 1
+  description "Cabinet 10I"
+fex 120
+  pinning max-links 1
+  description "Rack 10J"
+snmp-server contact DOT OCIO Net. Operations Center, 202-385-4357 (5-HELP), IMC@dot.gov
+snmp-server location SFC-HQ
+snmp-server source-interface informs Vlan350
+snmp-server user admin network-admin auth md5 0xd4afd2e07653b3e2e762848fd500db3a priv 0xd4afd2e07653b3e2e762848fd500db3a localizedkey
+snmp-server user storage network-operator auth md5 0xffbe5a113780f274f425a4e4ef50da50 priv 0xffbe5a113780f274f425a4e4ef50da50 localizedkey
+snmp-server user idn-admin priv-15 auth md5 0x4612902889c8d517c6536793981c262a priv 0x4612902889c8d517c6536793981c262a localizedkey
+snmp-server user idn-admin network-admin
+snmp-server host 152.120.2.224 traps version 2c w9uhuDuSwegeth3
+rmon event 1 log trap public description FATAL(1) owner PMON@FATAL
+rmon event 2 log trap public description CRITICAL(2) owner PMON@CRITICAL
+rmon event 3 log trap public description ERROR(3) owner PMON@ERROR
+rmon event 4 log trap public description WARNING(4) owner PMON@WARNING
+rmon event 5 log trap public description INFORMATION(5) owner PMON@INFO
+snmp-server enable traps callhome event-notify
+snmp-server enable traps callhome smtp-send-fail
+snmp-server enable traps cfs state-change-notif
+snmp-server enable traps cfs merge-failure
+snmp-server enable traps aaa server-state-change
+snmp-server enable traps hsrp state-change
+snmp-server enable traps feature-control FeatureOpStatusChange
+snmp-server enable traps sysmgr cseFailSwCoreNotifyExtended
+snmp-server enable traps config ccmCLIRunningConfigChanged
+snmp-server enable traps snmp authentication
+snmp-server enable traps link cisco-xcvr-mon-status-chg
+snmp-server enable traps vtp notifs
+snmp-server enable traps vtp vlancreate
+snmp-server enable traps vtp vlandelete
+snmp-server enable traps bridge newroot
+snmp-server enable traps bridge topologychange
+snmp-server enable traps stpx inconsistency
+snmp-server enable traps stpx root-inconsistency
+snmp-server enable traps stpx loop-inconsistency
+snmp-server enable traps feature-control ciscoFeatOpStatusChange
+snmp-server community Tul9aLBuDw7eRe group network-operator
+snmp-server community Fur1oLlOLat1aw group network-admin
+snmp-server community w9uhuDuSwegeth3s group network-admin
+ntp distribute
+ntp server 152.120.106.10 key 6
+ntp server 152.120.106.135 key 6
+ntp source-interface Vlan350
+ntp authentication-key 6 md5 Gui4sOntQqYi4zs 7
+ntp trusted-key 6
+ntp logging
+ntp commit
+aaa authentication login default group tacacs+
+aaa authentication login console local
+aaa accounting default group tacacs+
+aaa authentication login error-enable
+tacacs-server directed-request
+
+ip route 0.0.0.0/0 10.59.53.1
+vlan 1
+vlan 2
+  name NOC_Server_West
+vlan 3
+  name NOC_Server_East
+vlan 6
+  name VOIP
+vlan 8
+  name SE2_heartbeat1
+vlan 9
+  name SE2_heartbeat2
+vlan 10
+  name Cyclades
+vlan 11
+  name SDSF_Cyclades
+vlan 164
+  name SAN_Mgt
+vlan 205
+  name SharePoint2007
+vlan 206
+  name NHTSA_server_206
+vlan 207
+  name HMSA-virtualmgmt
+vlan 211
+  name PHMSA_server_211
+vlan 217
+  name OIG_DR
+vlan 224
+  name SAN_Data
+vlan 225
+  name FHWA_intsvcitdwweb
+vlan 227
+  name FHWA_intsvcadbweb
+vlan 231
+  name CSMC_Arcsite
+vlan 232
+  name OST_Server_1
+vlan 233
+  name FRA_Server
+vlan 234
+  name OST_Server_2
+vlan 235
+  name Lexmark_Print_Svrs
+vlan 236
+  name FTA_Server
+vlan 237
+  name FHWA_Video_Conference
+vlan 238
+  name NHTSA_FARS_PROD
+vlan 239
+  name NHTSA_FARS_DEV
+vlan 240
+  name NHTSA_Server
+vlan 241
+  name Voicemail_Servers
+vlan 242
+  name Windows_7_Validation
+vlan 243
+  name OIG_VDI
+vlan 244
+  name OIG_Server
+vlan 245
+  name VDI_Pilot
+vlan 246
+  name Remedy
+vlan 247
+  name Sharepoint_2010
+vlan 248
+  name SP2010_Production
+vlan 249
+  name VM_Desktop
+vlan 250
+  name VDI-F5
+vlan 251
+  name NFS
+vlan 254
+  name FRA_#2
+vlan 256
+  name VM-STraffic_VDI_PH2
+vlan 257
+  name VM-DTraffic_VDI_PH2
+vlan 258
+  name FCOE-MGMT_VDI_PH2
+vlan 259
+  name FCOE-A
+vlan 260
+  name FCOE-B
+vlan 261
+  name COE_Servers_3_SCOM
+vlan 263
+  name NHTSA_CIFS
+vlan 264
+  name NHTSA_Ciren_Internal
+vlan 265
+  name FMCSA_Servers
+vlan 266
+  name OST-R_Servers
+vlan 267
+  name Exchange_2013_Hybrid
+vlan 307
+  name PHMSA_mgmt_307
+vlan 318
+  name FHWA_ASA_Outside
+vlan 319
+  name FHWA_ASA_Inside
+vlan 324
+  name se3_management
+vlan 326
+  name OST_Server_1_Mgt
+vlan 327
+  name OST_Server_2_Mgt
+vlan 328
+  name RITA_Server_Mgt
+vlan 329
+  name FTA_Server_Mgt
+vlan 330
+  name FRA_Server_Mgt
+vlan 331
+  name SDE1_Management
+vlan 335
+  name VMWare_VMotion_SFC
+vlan 336
+  name vMotion
+vlan 337
+  name ESXiMGMT
+vlan 344
+  name OIG_Server_Mgmt
+vlan 345
+  name OST_VDIPH2_Mgt
+vlan 346
+  name ESXiMGMT_VDI_PH2
+vlan 347
+  name vMotion_VDI_PH2
+vlan 348
+  name NHTSA#2_Server_MGMT
+vlan 350
+  name OST_Server3_MGMT
+vlan 351
+  name VDI_PROD_MGMT
+vlan 352
+  name VDI-PROD_ESXI_MGMT
+vlan 353
+  name VDI-PROD_VMOTION
+vlan 354
+  name OST_Server4_MGMT
+vlan 355
+  name SFC_ISE_PSN_Private
+vlan 356
+  name NHTSA#3_Server_MGMT
+vlan 425
+  name MS_SQL_2012_Cluster
+vlan 426
+  name iSCSI_VLAN
+vlan 427
+  name iSCSI_VLAN_MGMT
+vlan 428
+  name StorSimp_HeartBeat_1
+vlan 429
+  name StorSimp_HeartBeat_2
+vlan 435
+  name SP2010_DB_Heartbeat
+vlan 895
+  name Server_Distribution
+vlan 990
+  name VPC_Keepalive_19_and_20
+vlan 991
+  name VPC_Keepalive_3_and_10
+vlan 992
+  name VPC_Keepalive_4_and_11
+vlan 1228
+  name DYRE_Remediation
+vlan 2301
+  name PHMSA_Virtual1
+vlan 2302
+  name PHMSA_Virtual2
+vlan 2303
+  name SCOM_DB_Hrtbeat
+vlan 2304
+  name SCOM_HyperV_Hrtbeat
+vlan 2305
+  name SCOM_Live_Migration
+vlan 2310
+  name SFC-Exch-2010
+vlan 2311
+  name SFC-HTS
+vlan 2312
+  name SFC-CAS
+vlan 2313
+  name SFC-MBX
+vlan 2314
+  name DAG_REPLICATION
+vlan 2315
+  name DAG_MAPI
+vlan 2316
+  name F5-Front
+vlan 2317
+  name F5-Front-Public
+vlan 2318
+  name F5_Heartbeat
+vlan 2350
+  name PHMSA_ESXMgmt1
+vlan 2351
+  name PHMSA_ESXMgmt2
+vlan 2400
+  name DotNet_F5_Heartbeat
+vlan 2401
+  name Exch_F5_Heartbeat
+
+spanning-tree port type edge bpduguard default
+spanning-tree port type edge bpdufilter default
+spanning-tree port type network default
+vrf context management
+  ip route 0.0.0.0/0 10.59.53.0/27
+vrf context vpc_keepalive
+  ip route 0.0.0.0/0 10.59.80.16/30
+vpc domain 50
+  role priority 20
+  peer-keepalive destination 10.59.80.18 source 10.59.80.17 vrf vpc_keepalive
+  delay restore 150
+
+
+interface Vlan1
+
+interface Vlan350
+  no shutdown
+  ip address 10.59.53.22/27
+
+interface Vlan991
+  no shutdown
+  vrf member vpc_keepalive
+  ip address 10.59.80.17/30
+
+interface port-channel11
+  description DELL-CHASSIS Port-channel
+  switchport mode trunk
+  no lacp suspend-individual
+  spanning-tree port type normal
+  speed 10000
+  vpc 11
+
+interface port-channel12
+  description DELL-CHASSIS Port-channel
+  switchport mode trunk
+  no lacp suspend-individual
+  spanning-tree port type normal
+  speed 10000
+  vpc 12
+
+interface port-channel13
+  description DELL-CHASSIS Port-channel
+  switchport mode trunk
+  no lacp suspend-individual
+  spanning-tree port type normal
+  speed 10000
+  vpc 13
+
+interface port-channel14
+  description DELL-CHASSIS Port-channel
+  switchport mode trunk
+  no lacp suspend-individual
+  spanning-tree port type normal
+  speed 10000
+  vpc 14
+
+interface port-channel101
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 101
+  vpc 101
+
+interface port-channel102
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 102
+  vpc 102
+
+interface port-channel103
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 103
+  vpc 103
+
+interface port-channel104
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 104
+  vpc 104
+
+interface port-channel105
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 105
+  vpc 105
+
+interface port-channel106
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 106
+  vpc 106
+
+interface port-channel107
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 107
+  vpc 107
+
+interface port-channel108
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 108
+  vpc 108
+
+interface port-channel109
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 109
+  vpc 109
+
+interface port-channel110
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 110
+  vpc 110
+
+interface port-channel111
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 111
+  vpc 111
+
+interface port-channel112
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 112
+  vpc 112
+
+interface port-channel113
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 113
+  vpc 113
+
+interface port-channel114
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 114
+  vpc 114
+
+interface port-channel115
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 115
+  vpc 115
+
+interface port-channel116
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 116
+  vpc 116
+
+interface port-channel117
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 117
+  vpc 117
+
+interface port-channel118
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 118
+  vpc 118
+
+interface port-channel119
+  shutdown
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 119
+  vpc 119
+
+interface port-channel120
+  switchport mode fex-fabric
+  no lacp suspend-individual
+  fex associate 120
+  vpc 120
+
+interface port-channel150
+  switchport mode trunk
+  no lacp suspend-individual
+  switchport trunk allowed vlan 1-990,992-4094
+  spanning-tree port type network
+  speed 10000
+  vpc peer-link
+
+interface port-channel2001
+  description Port-channel to SDE1-SDW1
+  switchport mode trunk
+  no lacp suspend-individual
+  vpc 2001
+
+interface Ethernet1/1
+  description SDE1 E6/32
+  switchport mode trunk
+  channel-group 2001 mode active
+
+interface Ethernet1/2
+  description SDW1 E6/32
+  switchport mode trunk
+  channel-group 2001 mode active
+
+interface Ethernet1/3
+  shutdown
+
+interface Ethernet1/4
+  shutdown
+
+interface Ethernet1/5
+  description Peer Trunk to SE10B
+  switchport mode trunk
+  switchport trunk allowed vlan 1-990,992-4094
+  channel-group 150 mode active
+
+interface Ethernet1/6
+  description Peer Trunk to SE10B
+  switchport mode trunk
+  switchport trunk allowed vlan 1-990,992-4094
+  channel-group 150 mode active
+
+interface Ethernet1/7
+  description VPC keepalive to SE10B
+  switchport access vlan 991
+
+interface Ethernet1/8
+
+interface Ethernet1/9
+  description UPLINK TO DELL-CHASSIS-A TEN0/43
+  switchport mode trunk
+  spanning-tree port type edge trunk
+  channel-group 11 mode active
+
+interface Ethernet1/10
+  description UPLINK TO DELL-CHASSIS-A TEN0/43
+  switchport mode trunk
+  spanning-tree port type edge trunk
+  channel-group 13 mode active
+
+interface Ethernet1/11
+  description UPLINK TO DELL-CHASSIS-A TEN0/43
+  switchport mode trunk
+  spanning-tree port type edge trunk
+  channel-group 14 mode active
+
+interface Ethernet1/12
+  description UPLINK TO DELL-CHASSIS-A TEN0/43
+  switchport mode trunk
+  spanning-tree port type edge trunk
+  channel-group 12 mode active
+
+interface Ethernet1/13
+
+interface Ethernet1/14
+
+interface Ethernet1/15
+
+interface Ethernet1/16
+
+interface Ethernet1/17
+
+interface Ethernet1/18
+
+interface Ethernet1/19
+
+interface Ethernet1/20
+
+interface Ethernet1/21
+
+interface Ethernet1/22
+
+interface Ethernet1/23
+
+interface Ethernet1/24
+
+interface Ethernet1/25
+
+interface Ethernet1/26
+
+interface Ethernet1/27
+
+interface Ethernet1/28
+
+interface Ethernet1/29
+  description N2K Cabinet 3A
+  shutdown
+  switchport mode fex-fabric
+  fex associate 101
+  channel-group 101
+
+interface Ethernet1/30
+  description N2K Cabinet 10A
+  shutdown
+  switchport mode fex-fabric
+  fex associate 111
+  channel-group 111
+
+interface Ethernet1/31
+  description N2K Cabinet 3B
+  shutdown
+  switchport mode fex-fabric
+  fex associate 102
+  channel-group 102
+
+interface Ethernet1/32
+  description N2K Cabinet 10B
+  switchport mode trunk
+
+interface Ethernet1/33
+  description N2K Cabinet 3C
+  shutdown
+  switchport mode fex-fabric
+  fex associate 103
+  channel-group 103
+
+interface Ethernet1/34
+  description N2K Cabinet 10C
+  shutdown
+  switchport mode fex-fabric
+  fex associate 113
+  channel-group 113
+
+interface Ethernet1/35
+  description N2K Cabinet 3D
+  shutdown
+  switchport mode fex-fabric
+  fex associate 104
+  channel-group 104
+
+interface Ethernet1/36
+  description N2K Cabinet 10D
+  shutdown
+  switchport mode fex-fabric
+  fex associate 114
+  channel-group 114
+
+interface Ethernet1/37
+  description N2K Cabinet 3E
+  shutdown
+  switchport mode fex-fabric
+  fex associate 105
+  channel-group 105
+
+interface Ethernet1/38
+  description N2K Cabinet 10E
+  shutdown
+  switchport mode fex-fabric
+  fex associate 115
+  channel-group 115
+
+interface Ethernet1/39
+  description N2K Cabinet 3F
+  shutdown
+  switchport mode fex-fabric
+  fex associate 106
+  channel-group 106
+
+interface Ethernet1/40
+  description N2K Cabinet 10F
+  shutdown
+  switchport mode fex-fabric
+  fex associate 116
+  channel-group 116
+
+interface Ethernet1/41
+  description N2K Cabinet 3G
+  shutdown
+  switchport mode fex-fabric
+  fex associate 107
+  channel-group 107
+
+interface Ethernet1/42
+  description N2K Cabinet 10G
+  shutdown
+  switchport mode fex-fabric
+  fex associate 117
+  channel-group 117
+
+interface Ethernet1/43
+  description N2K Cabinet 3H
+  shutdown
+  switchport mode fex-fabric
+  fex associate 108
+  channel-group 108
+
+interface Ethernet1/44
+  description N2K Cabinet 10H
+  shutdown
+  switchport mode fex-fabric
+  fex associate 118
+  channel-group 118
+
+interface Ethernet1/45
+  description N2K Cabinet 3I
+  shutdown
+  switchport mode fex-fabric
+  fex associate 109
+  channel-group 109
+
+interface Ethernet1/46
+  description N2K Cabinet 10I
+  shutdown
+  switchport mode fex-fabric
+  fex associate 119
+  channel-group 119
+
+interface Ethernet1/47
+  description N2K Rack 3J
+  switchport mode fex-fabric
+  fex associate 110
+  channel-group 110
+
+interface Ethernet1/48
+  description N2K Rack 10J
+  switchport mode fex-fabric
+  fex associate 120
+  channel-group 120
+
+interface Ethernet1/49
+
+interface Ethernet1/50
+
+interface Ethernet1/51
+
+interface Ethernet1/52
+
+interface mgmt0
+  vrf member management
+  ip address 192.168.6.1/24
+
+interface Ethernet110/1/1
+
+interface Ethernet110/1/2
+
+interface Ethernet110/1/3
+
+interface Ethernet110/1/4
+
+interface Ethernet110/1/5
+
+interface Ethernet110/1/6
+
+interface Ethernet110/1/7
+
+interface Ethernet110/1/8
+
+interface Ethernet110/1/9
+
+interface Ethernet110/1/10
+
+interface Ethernet110/1/11
+
+interface Ethernet110/1/12
+
+interface Ethernet110/1/13
+
+interface Ethernet110/1/14
+
+interface Ethernet110/1/15
+
+interface Ethernet110/1/16
+
+interface Ethernet110/1/17
+
+interface Ethernet110/1/18
+
+interface Ethernet110/1/19
+
+interface Ethernet110/1/20
+
+interface Ethernet110/1/21
+
+interface Ethernet110/1/22
+
+interface Ethernet110/1/23
+
+interface Ethernet110/1/24
+
+interface Ethernet110/1/25
+
+interface Ethernet110/1/26
+
+interface Ethernet110/1/27
+
+interface Ethernet110/1/28
+
+interface Ethernet110/1/29
+
+interface Ethernet110/1/30
+
+interface Ethernet110/1/31
+
+interface Ethernet110/1/32
+
+interface Ethernet110/1/33
+
+interface Ethernet110/1/34
+
+interface Ethernet110/1/35
+
+interface Ethernet110/1/36
+
+interface Ethernet110/1/37
+
+interface Ethernet110/1/38
+
+interface Ethernet110/1/39
+
+interface Ethernet110/1/40
+
+interface Ethernet110/1/41
+
+interface Ethernet110/1/42
+
+interface Ethernet110/1/43
+
+interface Ethernet110/1/44
+
+interface Ethernet110/1/45
+
+interface Ethernet110/1/46
+
+interface Ethernet110/1/47
+
+interface Ethernet110/1/48
+
+interface Ethernet120/1/1
+
+interface Ethernet120/1/2
+
+interface Ethernet120/1/3
+
+interface Ethernet120/1/4
+
+interface Ethernet120/1/5
+
+interface Ethernet120/1/6
+
+interface Ethernet120/1/7
+
+interface Ethernet120/1/8
+
+interface Ethernet120/1/9
+
+interface Ethernet120/1/10
+
+interface Ethernet120/1/11
+
+interface Ethernet120/1/12
+
+interface Ethernet120/1/13
+
+interface Ethernet120/1/14
+
+interface Ethernet120/1/15
+
+interface Ethernet120/1/16
+
+interface Ethernet120/1/17
+
+interface Ethernet120/1/18
+
+interface Ethernet120/1/19
+
+interface Ethernet120/1/20
+
+interface Ethernet120/1/21
+
+interface Ethernet120/1/22
+
+interface Ethernet120/1/23
+
+interface Ethernet120/1/24
+
+interface Ethernet120/1/25
+
+interface Ethernet120/1/26
+
+interface Ethernet120/1/27
+
+interface Ethernet120/1/28
+
+interface Ethernet120/1/29
+
+interface Ethernet120/1/30
+
+interface Ethernet120/1/31
+
+interface Ethernet120/1/32
+
+interface Ethernet120/1/33
+
+interface Ethernet120/1/34
+
+interface Ethernet120/1/35
+
+interface Ethernet120/1/36
+
+interface Ethernet120/1/37
+
+interface Ethernet120/1/38
+
+interface Ethernet120/1/39
+
+interface Ethernet120/1/40
+
+interface Ethernet120/1/41
+
+interface Ethernet120/1/42
+
+interface Ethernet120/1/43
+
+interface Ethernet120/1/44
+
+interface Ethernet120/1/45
+
+interface Ethernet120/1/46
+
+interface Ethernet120/1/47
+
+interface Ethernet120/1/48
+cli alias name cpu show processes cpu history
+cli alias name s6if show ipv6 interface
+cli alias name s6r show ipv6 route
+cli alias name s6rs show ipv6 route summ
+cli alias name wr copy running-config startup-config
+line console
+line vty
+  exec-timeout 10
+  access-class 25 in
+boot kickstart bootflash:/n6000-uk9-kickstart.7.1.3.N1.1.bin
+boot system bootflash:/n6000-uk9.7.1.3.N1.1.bin
+poap transit
+logging server 152.120.3.172 5 use-vrf default facility local4
+logging server 152.120.2.210 5 use-vrf default facility local4
+
+
+SE3B# sh fexs[J
+  FEX         FEX           FEX              FEX              Fex       
+Number    Description      State            Model            Serial     
+------------------------------------------------------------------------
+110        Rack 3J                Online   N2K-C2248TP-E-1GE   FOT1819R02E
+120       Rack 10J                Online   N2K-C2248TP-E-1GE   FOX1831G1EA
+SE3B# 
+SE3B# 
+SE3B# 
+SE3B# exit
+Connection to se3b closed.
+]0;osolaru@Jumper2:~[osolaru@Jumper2 ~]$ exit
+logout
+[H[2J
